@@ -5,11 +5,12 @@ __version__ = '0.0.1'
 
 import os
 import sys
-import click
 
+import click
 from jina import Flow, Document
-from helper import input_generator
 from jina.logging.predefined import default_logger as logger
+
+from helper import input_generator
 
 
 def config():
@@ -35,7 +36,11 @@ def index(num_docs):
         flow.logger.info(f'Indexing {data_path}')
         flow.post(on='/index', inputs=input_docs, request_size=10,
                   show_progress=True)
-        flow.post(on='/dump', parameters={'dump_path': 'workspace/dump/indexer', 'shards': 1}, show_progress=True)
+        flow.post(on='/dump', target_peapod='indexer',
+                  parameters={'dump_path':
+                                  'workspace/dump/indexer',
+                              'shards': 1},
+                  show_progress=True)
 
 
 # for search
@@ -61,13 +66,15 @@ def query_text():
     with f:
         search_text = input('Please type a sentence: ')
         doc = Document(content=search_text, mime_type='text/plain')
-        response = f.post('/search', inputs=doc, parameters={'lookup_type': 'parent'}, return_results=True)
+        response = f.post('/search', inputs=doc, parameters={'lookup_type': 'parent'},
+                          return_results=True)
         print_result(response[0].data)
 
 
 @click.command()
 @click.option('--task', '-t',
-              type=click.Choice(['index', 'query', 'query_text'], case_sensitive=False))
+              type=click.Choice(['index', 'query', 'query_text'],
+                                case_sensitive=False))
 @click.option('--num_docs', '-n', default=100)
 def main(task, num_docs):
     config()
