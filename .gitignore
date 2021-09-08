@@ -1,0 +1,8 @@
+lyrics-data/lyrics-data.csv
+data/*
+*.pyc
+~/*
+.github/
+.idea/
+workspace/
+venv/
